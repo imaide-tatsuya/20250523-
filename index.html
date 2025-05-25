@@ -222,16 +222,14 @@ function confirmSend() {
   document.getElementById('workerName').value = localStorage.getItem('workerName');
   document.getElementById('previewModal').style.display = 'none';
 
-  // 作業完了フォームにデータ展開
   document.getElementById("maintenanceForm").style.display = 'none';
   document.getElementById("completionForm").style.display = 'block';
   document.getElementById("completeId").value = data['jobId'];
   document.getElementById("completeDate").value = new Date().toLocaleDateString();
   document.getElementById("photoRequest").value = data['photo'] || '';
 }
-}
 
-function editForm() {
+function editForm( {
   const data = JSON.parse(localStorage.getItem('latestFormData'));
   for (let key in data) {
     const field = document.querySelector(`[name="${key}"]`);
@@ -240,9 +238,7 @@ function editForm() {
   document.getElementById('previewModal').style.display = 'none';
 }
 
-      alert("送信完了！");
-      this.reset();
-      document.getElementById('workerName').value = localStorage.getItem('workerName');
+      // alertはconfirmSend内にまとめて処理されました
     });
   function submitCompletion() {
   const completionData = {
@@ -266,30 +262,7 @@ function editForm() {
   document.getElementById("completionForm").style.display = 'none';
   loadRequests();
 }
-  window.onload = function () {
-    const savedName = localStorage.getItem('workerName');
-    const savedForm = localStorage.getItem('latestFormData');
-
-    if (savedName) {
-      document.getElementById('workerName').value = savedName;
-      document.getElementById('login').style.display = 'none';
-
-      if (savedForm) {
-        if (confirm('前回の作業内容を復元しますか？')) {
-          const data = JSON.parse(savedForm);
-          for (let key in data) {
-            const field = document.querySelector(`[name="${key}"]`);
-            if (field) field.value = data[key];
-          }
-          document.getElementById('maintenanceForm').style.display = 'block';
-          return;
-        } else {
-          localStorage.removeItem('latestFormData');
-        }
-      }
-      loadRequests();
-    }
-  };
+  
 </script>
 <div id="requestList" style="display:none; padding:1em; max-width:700px; margin:auto;">
   <h2>作業依頼リスト</h2>
@@ -303,8 +276,13 @@ function editForm() {
     const list = document.getElementById('requestItems');
     list.innerHTML = '';
     data.forEach(item => {
-      if (item['№貼紙'] !== '後日対応' && item['完了'] === '済') return;
-    });
+  if (item['№貼紙'] !== '後日対応' && item['完了'] === '済') return;
+  const li = document.createElement('li');
+  li.textContent = `依頼ID: ${item['依頼ID']} / 納期: ${item['納期']} / 初期メンテ: ${item['初期メンテナンス']}`;
+  li.style.cursor = 'pointer';
+  li.onclick = () => selectRequest(item['依頼ID']);
+  list.appendChild(li);
+});
     document.getElementById('requestList').style.display = 'block';
   }
 
@@ -316,13 +294,29 @@ function editForm() {
   }
 
   window.onload = function () {
-    const savedName = localStorage.getItem('workerName');
-    if (savedName) {
-      document.getElementById('workerName').value = savedName;
-      document.getElementById('login').style.display = 'none';
-      loadRequests();
+  const savedName = localStorage.getItem('workerName');
+  const savedForm = localStorage.getItem('latestFormData');
+
+  if (savedName) {
+    document.getElementById('workerName').value = savedName;
+    document.getElementById('login').style.display = 'none';
+
+    if (savedForm) {
+      if (confirm('前回の作業内容を復元しますか？')) {
+        const data = JSON.parse(savedForm);
+        for (let key in data) {
+          const field = document.querySelector(`[name="${key}"]`);
+          if (field) field.value = data[key];
+        }
+        document.getElementById('maintenanceForm').style.display = 'block';
+        return;
+      } else {
+        localStorage.removeItem('latestFormData');
+      }
     }
-  };
+    loadRequests();
+  }
+};
 </script>
 </body>
 </html>
