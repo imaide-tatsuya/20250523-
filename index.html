@@ -161,29 +161,7 @@
 </form>
 
   <script>
-    window.onload = function () {
-  const savedName = localStorage.getItem('workerName');
-  const savedForm = localStorage.getItem('latestFormData');
-
-  if (savedName) {
-    document.getElementById('workerName').value = savedName;
-    document.getElementById('login').style.display = 'none';
-    if (savedForm) {
-      if (confirm('前回の作業内容を復元しますか？')) {
-        const data = JSON.parse(savedForm);
-        for (let key in data) {
-          const field = document.querySelector(`[name="${key}"]`);
-          if (field) field.value = data[key];
-        }
-        document.getElementById('maintenanceForm').style.display = 'block';
-        return;
-      } else {
-        localStorage.removeItem('latestFormData');
-      }
-    }
-    loadRequests();
-  }
-};
+    
 
     function handleLogin() {
       const name = document.getElementById('loginName').value;
@@ -288,6 +266,30 @@ function editForm() {
   document.getElementById("completionForm").style.display = 'none';
   loadRequests();
 }
+  window.onload = function () {
+    const savedName = localStorage.getItem('workerName');
+    const savedForm = localStorage.getItem('latestFormData');
+
+    if (savedName) {
+      document.getElementById('workerName').value = savedName;
+      document.getElementById('login').style.display = 'none';
+
+      if (savedForm) {
+        if (confirm('前回の作業内容を復元しますか？')) {
+          const data = JSON.parse(savedForm);
+          for (let key in data) {
+            const field = document.querySelector(`[name="${key}"]`);
+            if (field) field.value = data[key];
+          }
+          document.getElementById('maintenanceForm').style.display = 'block';
+          return;
+        } else {
+          localStorage.removeItem('latestFormData');
+        }
+      }
+      loadRequests();
+    }
+  };
 </script>
 <div id="requestList" style="display:none; padding:1em; max-width:700px; margin:auto;">
   <h2>作業依頼リスト</h2>
